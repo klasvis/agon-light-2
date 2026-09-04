@@ -32,45 +32,50 @@
 320 IF H% = 0 THEN PRINT "Bestand niet gevonden!": WAIT 100: GOTO 40
 330 L% = EXT#H% : CLOSE#H%
 340 :
-350 REM 1. Laad bestand direct in SRAM op &50000
-360 PRINT "Laden van "; F$; " ("; L%; " bytes)..."
-370 OSCLI "LOAD " + F$ + " 50000"
-380 :
-390 REM 2. Initialiseer UART1 hardware op UEXT (115200 baud, 8N1)
-400 DIM I% 32
-410 ?I%=&3E:?(I%+1)=0:?(I%+2)=&D3:?(I%+3)=&D1         : REM OUT (&D1), 0 (Interrupts uit)
-420 ?(I%+4)=&3E:?(I%+5)=&83:?(I%+6)=&D3:?(I%+7)=&D3   : REM OUT (&D3), &83 (DLAB aan)
-430 ?(I%+8)=&3E:?(I%+9)=&0A:?(I%+10)=&D3:?(I%+11)=&D0 : REM OUT (&D0), 10 (115200 baud LSB)
-440 ?(I%+12)=&3E:?(I%+13)=0:?(I%+14)=&D3:?(I%+15)=&D1 : REM OUT (&D1), 0 (MSB)
-450 ?(I%+16)=&3E:?(I%+17)=&03:?(I%+18)=&D3:?(I%+19)=&D3: REM OUT (&D3), 3 (8N1, DLAB uit)
-460 ?(I%+20)=&3E:?(I%+21)=&07:?(I%+22)=&D3:?(I%+23)=&D2: REM OUT (&D2), 7 (FIFO aan & leeg)
-470 ?(I%+24)=&3E:?(I%+25)=&03:?(I%+26)=&D3:?(I%+27)=&D4: REM OUT (&D4), 3 (DTR & RTS actief)
-480 ?(I%+28)=&C9                                      : REM RET
-490 CALL I%
-500 :
-510 REM 3. Zend scherm-wis commando (ESC FF) naar tablet
-520 DIM S% 32
-530 ?S%=&DB:?(S%+1)=&D5:?(S%+2)=&E6:?(S%+3)=&20:?(S%+4)=&28:?(S%+5)=&FA : REM wacht op TX leeg
-540 ?(S%+6)=&79:?(S%+7)=&D3:?(S%+8)=&D0:?(S%+9)=&C9                     : REM OUT (&D0), A & RET
-550 A%=27 : CALL S% : REM ESC
-560 A%=12 : CALL S% : REM FF (Page Erase)
-570 :
-580 REM 4. Stream de hele tekening vanuit SRAM &50000 naar UART1
-590 PRINT "Streamen naar tablet via UEXT..."
-600 DIM T% 32
-610 ?T%=&21:?(T%+1)=&00:?(T%+2)=&00:?(T%+3)=&05       : REM LD HL, &50000
-620 ?(T%+4)=&01:!(T%+5)=L%                            : REM LD BC, L%
-630 REM Lus: wacht tot zender vrij is, stuur byte
-640 ?(T%+7)=&DB:?(T%+8)=&D5:?(T%+9)=&E6:?(T%+10)=&20:?(T%+11)=&28:?(T%+12)=&FA : REM wacht TX
-650 ?(T%+13)=&7E                                      : REM LD A, (HL)
-660 ?(T%+14)=&D3:?(T%+15)=&D0                         : REM OUT (&D0), A
-670 ?(T%+16)=&23                                      : REM INC HL
-680 ?(T%+17)=&0B                                      : REM DEC BC
-690 ?(T%+18)=&78                                      : REM LD A, B
-700 ?(T%+19)=&B1                                      : REM OR C
-710 ?(T%+20)=&20:?(T%+21)=&EF                         : REM JR NZ, Lus
-720 ?(T%+22)=&C9                                      : REM RET
-730 CALL T%
-740 :
-750 PRINT "Verzonden! Druk op een toets..."
-760 K$ = GET$ : GOTO 40
+350 OSCLI "*LOAD " + F$ + " &50000"
+360 :
+370 REM 1. Open UART1 op UEXT (115200 baud, 8N1)
+380 DIM U% 16
+390 !U% = 115200
+400 ?(U%+3)=8 : ?(U%+4)=1 : ?(U%+5)=0 : ?(U%+6)=0 : ?(U%+7)=0
+410 :
+420 DIM C% 128
+430 P% = C%
+440 [
+450 OPT 0
+460 PUSH IX
+470 PUSH IY
+480 LD IX, U%
+490 LD A, &15
+500 DEFB &49
+510 RST &08
+520 LD A, &18 : LD C, 27 : DEFB &49 : RST &08
+530 LD A, &18 : LD C, 12 : DEFB &49 : RST &08
+540 LD HL, &50000
+550 LD DE, L%
+560 .stream_loop
+570 LD A, (HL)
+580 LD C, A
+590 LD A, &18
+600 PUSH BC
+610 PUSH DE
+620 PUSH HL
+630 DEFB &49
+640 RST &08
+650 POP HL
+660 POP DE
+670 POP BC
+680 INC HL
+690 DEC DE
+700 LD A, D
+710 OR E
+720 JR NZ, stream_loop
+730 POP IY
+740 POP IX
+750 RET
+760 ]
+770 :
+780 PRINT "Streamen naar tablet via UEXT..."
+790 CALL C%
+800 PRINT "Klaar! Druk op een toets..."
+810 K$ = GET$ : GOTO 40
