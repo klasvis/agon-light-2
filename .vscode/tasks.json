@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Kopieer alles naar MicroSD (D:)",
+      "type": "shell",
+      "command": ".\\kopieer_naar_sd.bat",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Installeer Python Requirements",
+      "type": "shell",
+      "command": "pip install -r requirements.txt",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Agon Serial Terminal",
+      "type": "shell",
+      "command": "python agon_terminal.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "Converteer alle fotos naar Agon RGB",
+      "type": "shell",
+      "command": "python convert_jpg_to_bitmap.py boerderij.jpg 160 120 boerderij.rgb && python convert_jpg_to_bitmap.py molen.jpg 160 120 molen.rgb && python convert_jpg_to_bitmap.py koeien.jpg 160 120 koeien.rgb && python convert_jpg_to_bitmap.py trekker.jpg 160 120 trekker.rgb",
+      "problemMatcher": []
+    }
+  ]
+}

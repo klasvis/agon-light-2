@@ -1,0 +1,2 @@
+load basic24.bin
+run

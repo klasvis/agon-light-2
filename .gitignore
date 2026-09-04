@@ -5,9 +5,10 @@ pico2_monitor/
 mc/
 plots/
 
-# Binary ROMs & firmware (keep only our assembled tools)
+# Binary ROMs & firmware (keep only our assembled tools and sdcard files)
 *.bin
 !tekview.bin
+!sdcard/*.bin
 
 # Python helper / upload / diagnostic scripts
 test_*.py
@@ -24,6 +25,7 @@ deploy_*.py
 flash_*.py
 inject_*.py
 install_*.py
+!install_requirements.bat
 run_*.py
 run_*.bat
 copy_*.py
@@ -35,6 +37,7 @@ make_*.py
 assemble_*.py
 build_*.py
 agon_*.py
+!agon_terminal.py
 fix_autoexec.py
 SEND_TO_AGON.bat
 
@@ -54,4 +57,3 @@ __pycache__/
 # Private credentials
 wifi.txt
 wifi.bas
-

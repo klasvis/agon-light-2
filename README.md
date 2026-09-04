@@ -4,6 +4,40 @@ Een complete grafische suite voor de **Agon Light 2** (eZ80 + ESP32 VDP) met bli
 
 ---
 
+## 💻 Direct aan de slag op een andere PC (bijv. in Borne met VS Code)
+
+Heb je een andere computer (zoals in Borne)? Dan kun je binnen 1 minuut direct weer verder:
+
+### 1. Download & Open in VS Code
+* Download de repository als **ZIP** (via de groene knop *Code -> Download ZIP* op GitHub) en pak hem uit, of clone hem met Git:
+  ```bash
+  git clone https://github.com/klasvis/agon-light-2.git
+  ```
+* Open de map in **VS Code** (`code .`).
+* VS Code herkent automatisch de instellingen in `.vscode/`:
+  - Aanbevolen extensies: *BBC BASIC for Z80* en *Python*.
+  - Handige sneltoetsen en taken via `Ctrl+Shift+B` (*Kopieer naar SD*, *Start Terminal*).
+
+### 2. Python-benodigdheden installeren (1 klik)
+Dubbelklik op **`install_requirements.bat`** (of typ `pip install -r requirements.txt`). Dit installeert `pyserial` en `Pillow`.
+
+### 3. SD-kaart klaarmaken in 1 seconde
+In de map **`sdcard/`** staat een complete, kant-en-klare MicroSD-kaart image met:
+- Het 24-bit besturingssysteem (`basic24.bin`, `autoexec.txt`)
+- Alle 4 de foto's (`boerderij.rgb`, `molen.rgb`, `koeien.rgb`, `trekker.rgb`)
+- Alle programma's (`FOTOSHOW.BAS`, `SNEL24.BAS`, `BOERDERIJ.BAS`, etc.)
+
+👉 **Kopieer simpelweg de inhoud van de map `sdcard/` naar de hoofdmap van je MicroSD-kaart.** Stop de kaart in de Agon Light 2 en hij start direct op in 24-bit BASIC met 438 KB RAM!
+
+### 4. Agon bedienen vanuit VS Code
+Open de ingebouwde terminal in VS Code (`Ctrl+``) en typ:
+```bash
+python agon_terminal.py
+```
+Dit zoekt automatisch de juiste USB-poort (bijv. COM3, COM4) en geeft je een live interactief venster met de Agon Light 2. Typ `RESET` om de Agon te herstarten.
+
+---
+
 ## ✨ Wat zit er in dit project?
 
 ### 1. ⚡ Bliksemsnelle 24-bit Bitmap Loader (`SNEL24.BAS` & `FOTOSHOW.BAS`)
@@ -34,28 +68,6 @@ Draait als een rustgevende screensaver op je Agon monitor met 4 Hollandse boerde
 - `convert_jpg_to_bitmap.py` + `converteer_naar_rgb.bat`: Sleep elke JPG/PNG foto op het batchbestand om direct een 160×120 Agon `.rgb` bitmap te maken.
 - `convert_jpg_to_plt.py` + `converteer_naar_plt.bat`: Zet elke foto automatisch om naar Tektronix vectorlijnen (`.plt`).
 - `kopieer_naar_sd.bat`: Kopieert in 1 seconde alle bestanden naar een aangesloten MicroSD-kaart (`D:\`).
-
----
-
-## 🚀 Hoe gebruik je het op de Agon Light 2?
-
-### Stap 1: Bestanden op de MicroSD-kaart zetten
-Steek de MicroSD-kaart in je PC en dubbelklik op `kopieer_naar_sd.bat` in `C:\agon\`.
-
-### Stap 2: Standaard opstarten in 24-bit BBC BASIC
-Zorg dat `autoexec.txt` op de SD-kaart het volgende bevat:
-```text
-load basic24.bin
-run
-```
-De Agon start bij het inschakelen nu direct op met **438 KB vrij werkgeheugen**.
-
-### Stap 3: Diashow starten
-Typ in BBC BASIC:
-```basic
-LOAD "FOTOSHOW.BAS"
-RUN
-```
 
 ---
 
@@ -93,6 +105,29 @@ LD A, D : OR E
 JR NZ, outer
 POP IY : POP IX
 RET
+```
+
+---
+
+## 📁 Structuur van de Repository
+
+```text
+├── .vscode/               # VS Code instellingen, taken en aanbevolen extensies
+├── sdcard/                # Kant-en-klare bestanden voor de MicroSD-kaart
+│   ├── basic24.bin        # 24-bit BBC BASIC (Agon ADL)
+│   ├── autoexec.txt       # Automatische opstartcode
+│   ├── FOTOSHOW.BAS       # Diashow screensaver
+│   ├── SNEL24.BAS         # Snelle bitmap loader demo
+│   ├── BOERDERIJ.BAS      # Pixel-art landschap met dieren
+│   ├── *.rgb              # Alle 4 de 160x120 64-kleuren foto's
+│   └── *.plt              # Tektronix vectorbestanden
+├── agon_terminal.py       # Live Agon USB-seriële terminal voor VS Code
+├── convert_jpg_to_bitmap.py # Foto naar Agon RGBA converter
+├── convert_jpg_to_plt.py    # Foto naar Tektronix vector converter
+├── kopieer_naar_sd.bat    # 1-klik kopieertool naar MicroSD
+├── install_requirements.bat # Installeer Python packages
+├── requirements.txt       # Python dependencies (pyserial, Pillow)
+└── README.md              # Projecthandleiding en documentatie
 ```
 
 ---

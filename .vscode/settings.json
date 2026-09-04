@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "*.BAS": "bbcbasic",
+    "*.bas": "bbcbasic",
+    "*.plt": "plaintext",
+    "*.obey": "shellscript",
+    "*.txt": "plaintext"
+  },
+  "editor.tabSize": 2,
+  "files.eol": "\r\n"
+}
