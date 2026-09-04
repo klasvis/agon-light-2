@@ -1,7 +1,8 @@
 # Heavy build caches & vendor repos
 agon-vdp/.pio/
 agon-vdp/.vscode/
-esp12f_tektronix/
+esp12f_tektronix/.pio/
+esp12f_tektronix/.vscode/
 pico2_monitor/
 mc/
 plots/
