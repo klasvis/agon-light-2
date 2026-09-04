@@ -1,4 +1,4 @@
-﻿# 🚜 Agon Light 2 — Boerderij & High-Speed Graphics Suite
+# 🚜 Agon Light 2 — Boerderij & High-Speed Graphics Suite
 
 Een complete grafische suite voor de **Agon Light 2** (eZ80 + ESP32 VDP) met bliksemsnelle 24-bit ADL bitmap-weergave, een retro boerderij-screensaver diashow, een interactief pixel-art landschap, een Tektronix vector-viewer en automatische Python conversie-tools.
 
@@ -69,6 +69,12 @@ Draait als een rustgevende screensaver op je Agon monitor met 4 Hollandse boerde
 - `convert_jpg_to_plt.py` + `converteer_naar_plt.bat`: Zet elke foto automatisch om naar Tektronix vectorlijnen (`.plt`).
 - `kopieer_naar_sd.bat`: Kopieert in 1 seconde alle bestanden naar een aangesloten MicroSD-kaart (`D:\`).
 
+### 6. ⚡ ESP32 VDP Firmware & Flasher (`agon-vdp/` & `firmware.bin`)
+- Bevat de volledige C++ broncode voor de Agon VDP videoprocessor (ESP32) inclusief onze ingebouwde **Tektronix 4014 vector decoder** (`video/tektronix.h`).
+- **`firmware.bin`**: De kant-en-klaar gecompileerde ESP32 VDP firmware binary.
+- **`flash_vdp_now.py`**: Flasht met 1 commando (`python flash_vdp_now.py COM4`) de nieuwste firmware direct naar de ESP32 over de USB-kabel.
+- Kan direct geopend en gecompileerd worden in VS Code met de **PlatformIO** extensie via de configuratie in `agon-vdp/platformio.ini`.
+
 ---
 
 ## 🔬 Hoe werkt de snelle transfer onder de motorkap?
@@ -113,6 +119,11 @@ RET
 
 ```text
 ├── .vscode/               # VS Code instellingen, taken en aanbevolen extensies
+├── agon-vdp/              # VDU / VDP ESP32 firmware C++ broncode (PlatformIO)
+│   ├── platformio.ini     # PlatformIO ESP32 configuratie
+│   └── video/             # C++ broncode (inclusief Tektronix 4014 decoder)
+├── firmware.bin           # Gecompileerde ESP32 VDP firmware binary
+├── flash_vdp_now.py       # Python script om de ESP32 VDP firmware te flashen
 ├── sdcard/                # Kant-en-klare bestanden voor de MicroSD-kaart
 │   ├── basic24.bin        # 24-bit BBC BASIC (Agon ADL)
 │   ├── autoexec.txt       # Automatische opstartcode
@@ -126,7 +137,7 @@ RET
 ├── convert_jpg_to_plt.py    # Foto naar Tektronix vector converter
 ├── kopieer_naar_sd.bat    # 1-klik kopieertool naar MicroSD
 ├── install_requirements.bat # Installeer Python packages
-├── requirements.txt       # Python dependencies (pyserial, Pillow)
+├── requirements.txt       # Python dependencies (pyserial, Pillow, esptool)
 └── README.md              # Projecthandleiding en documentatie
 ```
 

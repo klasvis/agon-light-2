@@ -1,14 +1,16 @@
-# Large firmware & vendor repos
-agon-vdp/
+# Heavy build caches & vendor repos
+agon-vdp/.pio/
+agon-vdp/.vscode/
 esp12f_tektronix/
 pico2_monitor/
 mc/
 plots/
 
-# Binary ROMs & firmware (keep only our assembled tools and sdcard files)
+# Binary ROMs & firmware (keep only our assembled tools, sdcard files, and vdp firmware)
 *.bin
 !tekview.bin
 !sdcard/*.bin
+!firmware.bin
 
 # Python helper / upload / diagnostic scripts
 test_*.py
@@ -23,6 +25,7 @@ safe_inject.py
 save_tokenized_tekview.py
 deploy_*.py
 flash_*.py
+!flash_vdp_now.py
 inject_*.py
 install_*.py
 !install_requirements.bat
