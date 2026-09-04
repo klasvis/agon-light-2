@@ -1,0 +1,43 @@
+   10 REM *** BLIKSEMSNELLE FOTO LOADER (160x120 RGBA) ***
+   20 MODE 8 : CLS
+   30 DIM c% 80
+   40 P% = c%
+   50 [
+   60 OPT 0
+   70 PUSH IX
+   80 PUSH IY
+   90 LD HL, &50000
+  100 LD DE, 300
+  110 .outer
+  120 LD B, 0
+  130 .inner
+  140 LD A, (HL)
+  150 PUSH BC
+  160 PUSH DE
+  170 PUSH HL
+  180 DEFB &49
+  190 RST &10
+  200 POP HL
+  210 POP DE
+  220 POP BC
+  230 INC HL
+  240 DJNZ inner
+  250 DEC DE
+  260 LD A, D
+  270 OR E
+  280 JR NZ, outer
+  290 POP IY
+  300 POP IX
+  310 RET
+  320 ]
+  330 T0% = TIME
+  340 *LOAD boerderij.rgb &50000
+  350 T1% = TIME
+  360 VDU 23, 27, 0, 1
+  370 VDU 23, 27, 1, 160; 120;
+  380 CALL c%
+  390 T2% = TIME
+  400 VDU 23, 27, 0, 1
+  410 VDU 23, 27, 3, 80; 50;
+  420 PRINT TAB(2, 26); "SD->RAM: "; (T1%-T0%)/100; "s | RAM->VDP: "; (T2%-T1%)/100; "s | Totaal: "; (T2%-T0%)/100; "s"
+  430 END

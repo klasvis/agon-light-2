@@ -1,0 +1,57 @@
+# Large firmware & vendor repos
+agon-vdp/
+esp12f_tektronix/
+pico2_monitor/
+mc/
+plots/
+
+# Binary ROMs & firmware (keep only our assembled tools)
+*.bin
+!tekview.bin
+
+# Python helper / upload / diagnostic scripts
+test_*.py
+test*.py
+tester.bin
+try_*.py
+transfer_*.py
+tokenize_*.py
+start_game.py
+inspect_load.py
+safe_inject.py
+save_tokenized_tekview.py
+deploy_*.py
+flash_*.py
+inject_*.py
+install_*.py
+run_*.py
+run_*.bat
+copy_*.py
+setup_*.py
+update_*.py
+upload_*.py
+show_*.py
+make_*.py
+assemble_*.py
+build_*.py
+agon_*.py
+fix_autoexec.py
+SEND_TO_AGON.bat
+
+# Preview / temp images
+preview_*.png
+rendered_*.png
+Ribbon-Cable-*.jpg
+*.rgba
+
+# Python cache & logs
+__pycache__/
+*.pyc
+*.log
+*.tmp
+*.bak
+
+# Private credentials
+wifi.txt
+wifi.bas
+
