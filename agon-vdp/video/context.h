@@ -176,7 +176,6 @@ class Context {
 		Point invScale(Point p);
 
 		// Font management functions
-		const fabgl::FontInfo * getFont();
 		void changeFont(std::shared_ptr<fabgl::FontInfo> newFont, std::shared_ptr<BufferStream> fontData, uint8_t flags);
 		bool cmpChar(uint8_t * c1, uint8_t *c2, uint8_t len);
 		char getScreenChar(Point p);
@@ -301,6 +300,7 @@ class Context {
 		Point toScreenCoordinates(int16_t X, int16_t Y);
 
 		// Font management functions
+		const fabgl::FontInfo * getFont();
 		void changeFont(uint16_t newFontId, uint8_t flags);
 		void resetFonts();
 		bool usingSystemFont();

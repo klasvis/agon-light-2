@@ -42,13 +42,13 @@
 420 : 
 500 DEF PROC_landschap
 510   REM Blauwe lucht (bovenste helft)
-520   GCOL 0, 3
+520   GCOL 0, 4
 530   MOVE 0, 480 : PLOT 101, 1279, 959
 540   REM Gele zon aan de hemel
-550   GCOL 0, 60
-560   MOVE 1100, 850 : PLOT 153, 1170, 850
+550   GCOL 0, 3
+560   MOVE 1100, 850 : PLOT 157, 1170, 850
 570   REM Groene wei (onderste helft)
-580   GCOL 0, 24
+580   GCOL 0, 2
 590   MOVE 0, 0 : PLOT 101, 1279, 480
 595 ENDPROC
 600 DEF PROC_maak_schuur(id%)

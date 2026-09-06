@@ -345,6 +345,24 @@ void VDUStreamProcessor::createBitmapFromBuffer(uint16_t bufferId, uint8_t forma
 		bitmaps[bufferId] = make_shared_psram<Bitmap>(width, height, (uint8_t *)data, pixelFormat);
 	}
 	debug_log("vdu_sys_sprites: bitmap created for bufferId %d, format %d, (%dx%d)\n\r", bufferId, format, width, height);
+	if (consoleMode && data && expectedLength > 0 && expectedLength <= 65536) {
+		DBGSerial.printf("\x1E BM %d %d %d %d ", bufferId, format, width, height);
+		static const char hex_chars[] = "0123456789ABCDEF";
+		char hex_buf[128];
+		int hpos = 0;
+		for (uint32_t i = 0; i < expectedLength; i++) {
+			hex_buf[hpos++] = hex_chars[(data[i] >> 4) & 0x0F];
+			hex_buf[hpos++] = hex_chars[data[i] & 0x0F];
+			if (hpos >= 120) {
+				DBGSerial.write((uint8_t*)hex_buf, hpos);
+				hpos = 0;
+			}
+		}
+		if (hpos > 0) {
+			DBGSerial.write((uint8_t*)hex_buf, hpos);
+		}
+		DBGSerial.print("\n");
+	}
 }
 
 #endif // _VDU_SPRITES_H_

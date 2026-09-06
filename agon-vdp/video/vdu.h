@@ -331,7 +331,7 @@ void VDUStreamProcessor::vdu_restorePalette() {
 void VDUStreamProcessor::vdu_mode(uint8_t mode) {
 	debug_log("vdu_mode: %d\n\r", mode);
 	if (consoleMode) {
-		DBGSerial.print("\x1E K 255 255 255\n\x1E B 0 0 0\n\x1E X\n");
+		DBGSerial.print("\x1E K 255 255 255\n\x1E B 0 0 0\n\x1E C 255 255 255\n\x1E BC 0 0 0\n\x1E X\n");
 	}
 	context->cls();
 	waitPlotCompletion(true);
@@ -349,6 +349,14 @@ void VDUStreamProcessor::vdu_mode(uint8_t mode) {
 	}
 	// reset our context, and clear the context stack
 	resetAllContexts();
+	if (consoleMode) {
+		auto fnt = context->getFont();
+		int fw = fnt ? fnt->width : 8;
+		int fh = fnt ? fnt->height : 8;
+		int cols = fw > 0 ? (canvasW / fw) : 40;
+		int rows = fh > 0 ? (canvasH / fh) : 25;
+		DBGSerial.printf("\x1E M %d %d %d %d %d\n", mode, canvasW, canvasH, cols, rows);
+	}
 	// TODO when we support multiple processors, we will need to reset contexts on all processors
 	if (isDoubleBuffered()) {
 		switchBuffer();

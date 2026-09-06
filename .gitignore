@@ -42,6 +42,8 @@ assemble_*.py
 build_*.py
 agon_*.py
 !agon_terminal.py
+!agon_monitor.py
+!run_monitor.bat
 fix_autoexec.py
 SEND_TO_AGON.bat
 

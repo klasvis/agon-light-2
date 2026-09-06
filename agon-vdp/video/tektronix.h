@@ -217,7 +217,21 @@ public:
 
 extern TekDecoder tekDecoder;
 
-// Functions to send Tektronix escape codes to DBGSerial
+inline uint8_t tek_last_r = 255;
+inline uint8_t tek_last_g = 255;
+inline uint8_t tek_last_b = 255;
+
+inline void tek_ensure_color(uint8_t r, uint8_t g, uint8_t b) {
+	if (!consoleMode) return;
+	if (r != tek_last_r || g != tek_last_g || b != tek_last_b) {
+		tek_last_r = r;
+		tek_last_g = g;
+		tek_last_b = b;
+		DBGSerial.printf("\x1E C %d %d %d\n", r, g, b);
+	}
+}
+
+// Functions to send Tektronix escape codes and extended VDP commands to DBGSerial
 inline void tek_write_byte(uint8_t b) {
 	DBGSerial.write(b);
 }
@@ -235,71 +249,107 @@ inline void tek_send_point(int x, int y) {
 	tek_write_byte(lx);
 }
 
+inline int tek_scale_x(int x, int sw) {
+	if (sw <= 1) return 0;
+	int tx = (x * 1023) / (sw - 1);
+	if (tx < 0) return 0;
+	if (tx > 1023) return 1023;
+	return tx;
+}
+
+inline int tek_scale_y(int y, int sh) {
+	if (sh <= 1) return 0;
+	int ty = (y * 779) / (sh - 1);
+	if (ty < 0) return 0;
+	if (ty > 779) return 779;
+	return ty;
+}
+
+inline int tek_scale_r(int r, int sw) {
+	if (sw <= 1) return 0;
+	return (r * 1023) / (sw - 1);
+}
+
 inline void tek_draw_line(int x1, int y1, int x2, int y2, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255) {
 	if (!consoleMode || sw < 2 || sh < 2) return;
-	int tx1 = (x1 * 1023) / (sw - 1);
-	int ty1 = ((sh - 1 - y1) * 779) / (sh - 1);
-	int tx2 = (x2 * 1023) / (sw - 1);
-	int ty2 = ((sh - 1 - y2) * 779) / (sh - 1);
-	tek_write_byte(0x1D);
-	tek_send_point(tx1, ty1);
-	tek_send_point(tx2, ty2);
-	tek_write_byte(0x1F);
+	tek_ensure_color(r, g, b);
+	int tx1 = tek_scale_x(x1, sw);
+	int ty1 = tek_scale_y(y1, sh);
+	int tx2 = tek_scale_x(x2, sw);
+	int ty2 = tek_scale_y(y2, sh);
+	DBGSerial.printf("\x1E L %d %d %d %d\n", tx1, ty1, tx2, ty2);
 }
 
 inline void tek_draw_rect(int x1, int y1, int x2, int y2, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, bool filled = false) {
 	if (!consoleMode || sw < 2 || sh < 2) return;
-	int tx1 = (x1 * 1023) / (sw - 1);
-	int ty1 = ((sh - 1 - y1) * 779) / (sh - 1);
-	int tx2 = (x2 * 1023) / (sw - 1);
-	int ty2 = ((sh - 1 - y2) * 779) / (sh - 1);
-	tek_write_byte(0x1D);
-	tek_send_point(tx1, ty1);
-	tek_send_point(tx2, ty1);
-	tek_send_point(tx2, ty2);
-	tek_send_point(tx1, ty2);
-	tek_send_point(tx1, ty1);
-	tek_write_byte(0x1F);
+	tek_ensure_color(r, g, b);
+	int tx1 = tek_scale_x(x1, sw);
+	int ty1 = tek_scale_y(y1, sh);
+	int tx2 = tek_scale_x(x2, sw);
+	int ty2 = tek_scale_y(y2, sh);
+	DBGSerial.printf("\x1E R %d %d %d %d %d\n", tx1, ty1, tx2, ty2, filled ? 1 : 0);
 }
 
 inline void tek_draw_circle(int cx, int cy, int radius, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, bool filled = false) {
 	if (!consoleMode || radius <= 0 || sw < 2 || sh < 2) return;
-	tek_write_byte(0x1D);
-	for (int i = 0; i <= 24; i++) {
-		float angle = (i * 6.2831853f) / 24.0f;
-		int px = cx + (int)(cos(angle) * radius);
-		int py = cy + (int)(sin(angle) * radius);
-		int tx = (px * 1023) / (sw - 1);
-		int ty = ((sh - 1 - py) * 779) / (sh - 1);
-		tek_send_point(tx, ty);
-	}
-	tek_write_byte(0x1F);
+	tek_ensure_color(r, g, b);
+	int tcx = tek_scale_x(cx, sw);
+	int tcy = tek_scale_y(cy, sh);
+	int tr  = tek_scale_r(radius, sw);
+	DBGSerial.printf("\x1E CI %d %d %d %d\n", tcx, tcy, tr, filled ? 1 : 0);
 }
 
-inline void tek_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255) {
+inline void tek_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, bool filled = true) {
 	if (!consoleMode || sw < 2 || sh < 2) return;
-	int tx1 = (x1 * 1023) / (sw - 1);
-	int ty1 = ((sh - 1 - y1) * 779) / (sh - 1);
-	int tx2 = (x2 * 1023) / (sw - 1);
-	int ty2 = ((sh - 1 - y2) * 779) / (sh - 1);
-	int tx3 = (x3 * 1023) / (sw - 1);
-	int ty3 = ((sh - 1 - y3) * 779) / (sh - 1);
-	tek_write_byte(0x1D);
-	tek_send_point(tx1, ty1);
-	tek_send_point(tx2, ty2);
-	tek_send_point(tx3, ty3);
-	tek_send_point(tx1, ty1);
-	tek_write_byte(0x1F);
+	tek_ensure_color(r, g, b);
+	int tx1 = tek_scale_x(x1, sw);
+	int ty1 = tek_scale_y(y1, sh);
+	int tx2 = tek_scale_x(x2, sw);
+	int ty2 = tek_scale_y(y2, sh);
+	int tx3 = tek_scale_x(x3, sw);
+	int ty3 = tek_scale_y(y3, sh);
+	DBGSerial.printf("\x1E T %d %d %d %d %d %d %d\n", tx1, ty1, tx2, ty2, tx3, ty3, filled ? 1 : 0);
+}
+
+inline void tek_draw_quad(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, bool filled = true) {
+	if (!consoleMode || sw < 2 || sh < 2) return;
+	tek_ensure_color(r, g, b);
+	int tx1 = tek_scale_x(x1, sw);
+	int ty1 = tek_scale_y(y1, sh);
+	int tx2 = tek_scale_x(x2, sw);
+	int ty2 = tek_scale_y(y2, sh);
+	int tx3 = tek_scale_x(x3, sw);
+	int ty3 = tek_scale_y(y3, sh);
+	int tx4 = tek_scale_x(x4, sw);
+	int ty4 = tek_scale_y(y4, sh);
+	DBGSerial.printf("\x1E Q %d %d %d %d %d %d %d %d %d\n", tx1, ty1, tx2, ty2, tx3, ty3, tx4, ty4, filled ? 1 : 0);
 }
 
 inline void tek_draw_point(int x, int y, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255) {
 	if (!consoleMode || sw < 2 || sh < 2) return;
-	int tx = (x * 1023) / (sw - 1);
-	int ty = ((sh - 1 - y) * 779) / (sh - 1);
-	tek_write_byte(0x1D);
-	tek_send_point(tx, ty);
-	tek_send_point(tx, ty);
-	tek_write_byte(0x1F);
+	tek_ensure_color(r, g, b);
+	int tx = tek_scale_x(x, sw);
+	int ty = tek_scale_y(y, sh);
+	DBGSerial.printf("\x1E P %d %d\n", tx, ty);
+}
+
+inline void tek_draw_ellipse(int cx, int cy, int rx, int ry, int sw, int sh, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, bool filled = false) {
+	if (!consoleMode || sw < 2 || sh < 2) return;
+	tek_ensure_color(r, g, b);
+	int tcx = tek_scale_x(cx, sw);
+	int tcy = tek_scale_y(cy, sh);
+	int trx = tek_scale_r(rx, sw);
+	int try_ = tek_scale_y(ry, sh);
+	DBGSerial.printf("\x1E E %d %d %d %d %d\n", tcx, tcy, trx, try_, filled ? 1 : 0);
+}
+
+inline void tek_draw_bitmap(uint16_t id, int x, int y, int w, int h, int sw, int sh) {
+	if (!consoleMode || sw < 2 || sh < 2) return;
+	int tx = tek_scale_x(x, sw);
+	int ty = tek_scale_y(y, sh);
+	int tw = tek_scale_r(w, sw);
+	int th = (h * 779) / (sh - 1);
+	DBGSerial.printf("\x1E BD %d %d %d %d %d\n", id, tx, ty, tw, th);
 }
 
 inline void tek_clear() {

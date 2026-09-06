@@ -24,6 +24,7 @@ copy /Y "C:\agon\SNEL24.BAS" "D:\"
 copy /Y "C:\agon\FOTO_RGB.BAS" "D:\"
 copy /Y "C:\agon\BOERDERIJ.BAS" "D:\"
 copy /Y "C:\agon\DEMO.BAS" "D:\"
+copy /Y "C:\agon\firmware.bin" "D:\"
 
 echo.
 echo [V] Alle 4 de foto's en de diashow staan nu op de MicroSD-kaart!

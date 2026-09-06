@@ -197,7 +197,7 @@ void Context::plotTriangle() {
 	// }
 	canvas->fillPath(p, 3);
 	int sw = canvas->getWidth(), sh = canvas->getHeight();
-	tek_draw_triangle(p3.X, p3.Y, p2.X, p2.Y, p1.X, p1.Y, sw, sh, gfg.R, gfg.G, gfg.B);
+	tek_draw_triangle(p3.X, p3.Y, p2.X, p2.Y, p1.X, p1.Y, sw, sh, gfg.R, gfg.G, gfg.B, true);
 }
 
 // Rectangle plot
@@ -205,7 +205,7 @@ void Context::plotTriangle() {
 void Context::plotRectangle() {
 	canvas->fillRectangle(p2.X, p2.Y, p1.X, p1.Y);
 	int sw = canvas->getWidth(), sh = canvas->getHeight();
-	tek_draw_rect(p2.X, p2.Y, p1.X, p1.Y, sw, sh, gfg.R, gfg.G, gfg.B, false);
+	tek_draw_rect(p2.X, p2.Y, p1.X, p1.Y, sw, sh, gfg.R, gfg.G, gfg.B, true);
 }
 
 // Parallelogram plot
@@ -221,6 +221,8 @@ void Context::plotParallelogram() {
 	// 	canvas->drawPath(p, 4);
 	// }
 	canvas->fillPath(p, 4);
+	int sw = canvas->getWidth(), sh = canvas->getHeight();
+	tek_draw_quad(p3.X, p3.Y, p2.X, p2.Y, p1.X, p1.Y, p[3].X, p[3].Y, sw, sh, gfg.R, gfg.G, gfg.B, true);
 }
 
 // Circle plot
@@ -254,6 +256,8 @@ void Context::plotEllipse(bool filled) {
 	} else {
 		canvas->drawEllipseSheared(p3.X, p3.Y, width, height, shear);
 	}
+	int sw = canvas->getWidth(), sh = canvas->getHeight();
+	tek_draw_ellipse(p3.X, p3.Y, width / 2, height / 2, sw, sh, gfg.R, gfg.G, gfg.B, filled);
 }
 
 // Arc plot
@@ -589,11 +593,17 @@ void Context::setGraphicsColour(uint8_t mode, uint8_t colour) {
 			gfg = colourLookup[c];
 			gfgc = col;
 			debug_log("vdu_gcol: mode %d, gfg %d = %02X : %02X,%02X,%02X\n\r", mode, colour, c, gfg.R, gfg.G, gfg.B);
+			if (consoleMode) {
+				tek_ensure_color(gfg.R, gfg.G, gfg.B);
+			}
 		}
 		else if (colour >= 128 && colour < 192) {
 			gbg = colourLookup[c];
 			gbgc = col;
 			debug_log("vdu_gcol: mode %d, gbg %d = %02X : %02X,%02X,%02X\n\r", mode, colour, c, gbg.R, gbg.G, gbg.B);
+			if (consoleMode) {
+				DBGSerial.printf("\x1E BC %d %d %d\n", gbg.R, gbg.G, gbg.B);
+			}
 		}
 		else {
 			debug_log("vdu_gcol: invalid colour %d\n\r", colour);
@@ -880,6 +890,11 @@ void Context::drawBitmap(uint16_t x, uint16_t y, bool compensateHeight, bool for
 			canvas->setPaintOptions(options);
 		}
 		auto yPos = (compensateHeight && logicalCoords) ? (y + 1 - bitmap->height) : y;
+		if (consoleMode) {
+			int sw = canvasW > 0 ? canvasW : canvas->getWidth();
+			int sh = canvasH > 0 ? canvasH : canvas->getHeight();
+			tek_draw_bitmap(currentBitmap, x, yPos, bitmap->width, bitmap->height, sw, sh);
+		}
 		if (bitmapTransform != 65535) {
 			auto transformBufferIter = buffers.find(bitmapTransform);
 			if (transformBufferIter != buffers.end()) {
@@ -931,6 +946,9 @@ void Context::cls() {
 	}
 	cursorHome();
 	setPagedMode(pagedMode);
+	if (consoleMode) {
+		DBGSerial.printf("\x1E CLS %d %d %d\n", tbg.R, tbg.G, tbg.B);
+	}
 }
 
 // Clear the graphics area
@@ -945,6 +963,9 @@ void Context::clg() {
 		plottingText = false;
 	}
 	pushPoint(0, 0);		// Reset graphics cursor position (as per BBC Micro CLG)
+	if (consoleMode) {
+		DBGSerial.printf("\x1E CLG %d %d %d\n", gbg.R, gbg.G, gbg.B);
+	}
 }
 
 void Context::scrollRegion(ViewportType viewport, uint8_t direction, int16_t movement) {
