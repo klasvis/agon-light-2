@@ -46,7 +46,6 @@
 // 17/09/2023:					+ Added ZDI mode
 
 #include <HardwareSerial.h>
-#include <WiFi.h>
 #include <fabgl.h>
 #include <ESP32Time.h>
 
@@ -107,7 +106,6 @@ void setup() {
 	#endif
 	DBGSerial.setTxBufferSize(8192);
 	DBGSerial.begin(SERIALBAUDRATE, SERIAL_8N1, 3, 1);
-	DBGSerial.beginWiFiAP("Agon-Light-VDP", "");
 	changeMode(startup_screen_mode);
 	copy_font();
 	setupVDPProtocol();
@@ -130,8 +128,7 @@ void setup() {
 //
 void loop() {
 	while (true) {
-		DBGSerial.update();
-		delay(10);
+		delay(100);
 	};
 }
 
@@ -177,11 +174,6 @@ void boot_screen() {
 		printFmt(" Build %s", VERSION_BUILD);
 	#endif
 	printFmt("\n\r");
-	if (DBGSerial.isWiFiAPActive()) {
-		printFmt("Wi-Fi AP: Agon-Light-VDP (192.168.4.1:23)\n\r");
-	} else {
-		printFmt("Wi-Fi AP: Failed to start\n\r");
-	}
 }
 
 // Debug printf to PC
