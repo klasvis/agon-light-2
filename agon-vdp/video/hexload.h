@@ -8,7 +8,7 @@
 #endif /* !USERSPACE */
 
 extern void printFmt(const char *format, ...);
-extern HardwareSerial DBGSerial;
+#include "vdp_stream.h"
 
 #ifndef USERSPACE
 CRC16 linecrc16(0x8005, 0x0, 0x0, false, false);

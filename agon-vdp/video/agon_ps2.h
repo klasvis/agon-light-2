@@ -40,7 +40,7 @@ void zdi_process_cmd (uint8_t key);
 
 bool resetMousePositioner(uint16_t width, uint16_t height, fabgl::VGABaseController * display);
 extern bool consoleMode;
-extern HardwareSerial DBGSerial;
+#include "vdp_stream.h"
 
 // Get keyboard instance
 //

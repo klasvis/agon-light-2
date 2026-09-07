@@ -68,7 +68,8 @@ extern uint32_t startup_screen_mode; /* in rust_glue.cpp */
 #define startup_screen_mode 2
 #endif /* !USERSPACE */
 
-HardwareSerial	DBGSerial(0);
+#include "vdp_stream.h"
+VDPDualStream	DBGSerial(0);
 
 #include "agon.h"								// Configuration file
 
@@ -106,6 +107,7 @@ void setup() {
 	#endif
 	DBGSerial.setTxBufferSize(8192);
 	DBGSerial.begin(SERIALBAUDRATE, SERIAL_8N1, 3, 1);
+	DBGSerial.beginWiFiAP("Agon-Light-VDP", "");
 	changeMode(startup_screen_mode);
 	copy_font();
 	setupVDPProtocol();
@@ -128,7 +130,8 @@ void setup() {
 //
 void loop() {
 	while (true) {
-		delay(1000);
+		DBGSerial.update();
+		delay(10);
 	};
 }
 
@@ -174,6 +177,7 @@ void boot_screen() {
 		printFmt(" Build %s", VERSION_BUILD);
 	#endif
 	printFmt("\n\r");
+	printFmt("Wi-Fi AP: Agon-Light-VDP (192.168.4.1:23)\n\r");
 }
 
 // Debug printf to PC

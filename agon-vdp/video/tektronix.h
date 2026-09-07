@@ -6,7 +6,7 @@
 #include <fabgl.h>
 #include <math.h>
 
-extern HardwareSerial DBGSerial;
+#include "vdp_stream.h"
 extern bool consoleMode;
 extern std::unique_ptr<fabgl::Canvas> canvas;
 extern uint16_t canvasW;

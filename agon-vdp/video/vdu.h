@@ -10,7 +10,7 @@
 
 extern bool consoleMode;
 extern bool printerOn;
-extern HardwareSerial DBGSerial;
+#include "vdp_stream.h"
 
 // Handle VDU commands
 //

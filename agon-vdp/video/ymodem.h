@@ -31,7 +31,7 @@
 #define YMODEM_MAX_RETRY               3
 
 // Global variables
-extern HardwareSerial DBGSerial;
+#include "vdp_stream.h"
 bool                  ymodem_session_aborted;
 static uint8_t        ymodem_fullblockbuffer[1+ YMODEM_BLOCKSIZE_1K + YMODEM_BLOCK_OVERHEAD];  // header + seq + ~seq + data + CRC
 static uint8_t        ymodem_tmpbuffer[YMODEM_BLOCKSIZE_1K];                                   // padded block buffer
