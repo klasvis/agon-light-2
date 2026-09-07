@@ -230,24 +230,23 @@
 3260   REPEAT
 3270     K% = INKEY(2)
 3280     IF K% = 27 THEN ENDPROC
-3290     IF K% = 32 THEN
-3300       SOUND 1, -15, 120, 3
-3310       SOUND 1, -15, 140, 4
-3320     ENDIF
-3330     OX% = TX% : OY% = TY%
-3340     IF (K% = 21 OR K% = 68 OR K% = 100) AND TX% < 290 THEN TX% = TX% + 3
-3350     IF (K% = 8  OR K% = 65 OR K% = 97)  AND TX% > 10  THEN TX% = TX% - 3
-3360     IF (K% = 11 OR K% = 87 OR K% = 119) AND TY% > 130 THEN TY% = TY% - 2
-3370     IF (K% = 10 OR K% = 83 OR K% = 115) AND TY% < 218 THEN TY% = TY% + 2
-3380     IF OX% <> TX% OR OY% <> TY% THEN
-3390       GCOL 0, 11
-3400       MOVE OX%*4, (239-OY%-16)*4
-3410       PLOT 101, (OX%+24)*4, (239-OY%)*4
-3420       VDU 23, 27, 0, 1
-3430       VDU 23, 27, 3, TX%; TY%;
-3440     ENDIF
-3450   UNTIL FALSE
-3460 ENDPROC
+3290     IF K% = 32 THEN SOUND 1, -15, 120, 3 : SOUND 1, -15, 140, 4
+3300     OX% = TX% : OY% = TY%
+3310     IF (K% = 21 OR K% = 68 OR K% = 100) AND TX% < 290 THEN TX% = TX% + 3
+3320     IF (K% = 8  OR K% = 65 OR K% = 97)  AND TX% > 10  THEN TX% = TX% - 3
+3330     IF (K% = 11 OR K% = 87 OR K% = 119) AND TY% > 130 THEN TY% = TY% - 2
+3340     IF (K% = 10 OR K% = 83 OR K% = 115) AND TY% < 218 THEN TY% = TY% + 2
+3350     IF OX% <> TX% OR OY% <> TY% THEN PROC_verplaats(OX%, OY%, TX%, TY%)
+3360   UNTIL FALSE
+3370 ENDPROC
+3380 :
+3390 DEF PROC_verplaats(ox%, oy%, tx%, ty%)
+3400   GCOL 0, 11
+3410   MOVE ox%*4, (239-oy%-16)*4
+3420   PLOT 101, (ox%+24)*4, (239-oy%)*4
+3430   VDU 23, 27, 0, 1
+3440   VDU 23, 27, 3, tx%; ty%;
+3450 ENDPROC
 3990 REM =========================================================
 3995 REM SPRITE DATA
 3999 REM =========================================================
