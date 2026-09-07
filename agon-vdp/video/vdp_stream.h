@@ -26,18 +26,21 @@ public:
         hwSerial.begin(baud, config, rxPin, txPin);
     }
 
-    void beginWiFiAP(const char *ssid = "Agon-Light-VDP", const char *pass = "") {
-        WiFi.persistent(false);
-        WiFi.disconnect(true);
+    bool beginWiFiAP(const char *ssid = "Agon-Light-VDP", const char *pass = nullptr) {
         WiFi.mode(WIFI_AP);
-        if (pass && strlen(pass) > 0) {
-            WiFi.softAP(ssid, pass);
-        } else {
-            WiFi.softAP(ssid);
-        }
+        IPAddress local_IP(192, 168, 4, 1);
+        IPAddress gateway(192, 168, 4, 1);
+        IPAddress subnet(255, 255, 255, 0);
+        WiFi.softAPConfig(local_IP, gateway, subnet);
+        bool ok = WiFi.softAP(ssid, (pass && strlen(pass) >= 8) ? pass : nullptr, 1, 0, 4);
         wifiServer.begin(23);
         wifiServer.setNoDelay(true);
-        wifiActive = true;
+        wifiActive = ok;
+        return ok;
+    }
+
+    bool isWiFiAPActive() const {
+        return wifiActive;
     }
 
     void update() {

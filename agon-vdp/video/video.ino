@@ -177,7 +177,11 @@ void boot_screen() {
 		printFmt(" Build %s", VERSION_BUILD);
 	#endif
 	printFmt("\n\r");
-	printFmt("Wi-Fi AP: Agon-Light-VDP (192.168.4.1:23)\n\r");
+	if (DBGSerial.isWiFiAPActive()) {
+		printFmt("Wi-Fi AP: Agon-Light-VDP (192.168.4.1:23)\n\r");
+	} else {
+		printFmt("Wi-Fi AP: Failed to start\n\r");
+	}
 }
 
 // Debug printf to PC
