@@ -23,6 +23,8 @@ copy /Y "C:\agon\SNEL.BAS" "D:\"
 copy /Y "C:\agon\SNEL24.BAS" "D:\"
 copy /Y "C:\agon\FOTO_RGB.BAS" "D:\"
 copy /Y "C:\agon\BOERDERIJ.BAS" "D:\"
+copy /Y "C:\agon\SUPER_BOERDERIJ.BAS" "D:\"
+copy /Y "C:\agon\DEMO_BITMAP.BAS" "D:\"
 copy /Y "C:\agon\DEMO.BAS" "D:\"
 copy /Y "C:\agon\firmware.bin" "D:\"
 
