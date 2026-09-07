@@ -60,7 +60,7 @@
 # define	DEBUG			0
 #endif /* USERSPACE */
 
-#define SERIALBAUDRATE	115200
+#define SERIALBAUDRATE	921600
 
 #ifdef USERSPACE
 extern uint32_t startup_screen_mode; /* in rust_glue.cpp */
@@ -104,6 +104,7 @@ void setup() {
 		disableCore0WDT(); delay(200);				// Disable the watchdog timers
 		disableCore1WDT(); delay(200);
 	#endif
+	DBGSerial.setTxBufferSize(8192);
 	DBGSerial.begin(SERIALBAUDRATE, SERIAL_8N1, 3, 1);
 	changeMode(startup_screen_mode);
 	copy_font();

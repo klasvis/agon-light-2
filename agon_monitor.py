@@ -26,7 +26,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Agon Light Live VDP Screen & Tektronix Monitor")
     parser.add_argument("--port", default="COM4", help="Serial port (default: COM4)")
-    parser.add_argument("--baud", type=int, default=115200, help="Baud rate (default: 115200)")
+    parser.add_argument("--baud", type=int, default=921600, help="Baud rate (default: 921600)")
     parser.add_argument("--wifi", default=None, help="Connect via Wi-Fi TCP (e.g. 192.168.1.50:23)")
     parser.add_argument("--file", default=None, help="Preview a local .plt file directly")
     args = parser.parse_args()
