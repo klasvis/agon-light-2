@@ -60,7 +60,7 @@
 # define	DEBUG			0
 #endif /* USERSPACE */
 
-#define SERIALBAUDRATE	921600
+#define SERIALBAUDRATE	115200
 
 #ifdef USERSPACE
 extern uint32_t startup_screen_mode; /* in rust_glue.cpp */
