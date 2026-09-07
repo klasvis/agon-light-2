@@ -204,10 +204,21 @@ def main():
                 b_fmt = int(parts[2])
                 bw = int(parts[3])
                 bh = int(parts[4])
-                hex_data = parts[5]
-                raw = bytes.fromhex(hex_data)
+                raw = bytes.fromhex(parts[5])
                 if b_fmt == 0 and len(raw) >= bw * bh * 4: # RGBA8888
                     bmp_surf = pygame.image.frombuffer(raw, (bw, bh), "RGBA")
+                    bitmaps[b_id] = bmp_surf
+                elif b_fmt == 1 and len(raw) >= bw * bh: # RGBA2222 (used by Cybernoid & Agon games)
+                    lut = bytes([0, 85, 170, 255])
+                    rgba32 = bytearray(bw * bh * 4)
+                    pos = 0
+                    for b in raw[:bw * bh]:
+                        rgba32[pos]   = lut[b & 3]          # R (bits 0-1)
+                        rgba32[pos+1] = lut[(b >> 2) & 3]   # G (bits 2-3)
+                        rgba32[pos+2] = lut[(b >> 4) & 3]   # B (bits 4-5)
+                        rgba32[pos+3] = lut[(b >> 6) & 3]   # A (bits 6-7)
+                        pos += 4
+                    bmp_surf = pygame.image.frombuffer(rgba32, (bw, bh), "RGBA")
                     bitmaps[b_id] = bmp_surf
             elif op == "BD" and len(parts) >= 4:
                 b_id = int(parts[1])
